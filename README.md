@@ -72,7 +72,7 @@ Send an SMS notification.
 **Request Body:**
 ```json
 {
-  "to": "+61430410829",
+  "to": "+1234567890",
   "message": "Test SMS message"
 }
 ```
@@ -95,6 +95,6 @@ clicksendtest/
 
 - Make sure your ClickSend account has sufficient credits
 - The sender email must be verified in your ClickSend account
-- Phone numbers must be in international E.164 format (e.g., `+61430410829`)
+- Phone numbers must be in international E.164 format (e.g., `+1234567890`)
 - SMS messages are limited to 160 characters
 
