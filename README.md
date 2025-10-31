@@ -17,10 +17,15 @@ pip install -r requirements.txt
 ```
 
 2. **Configure Environment**
-The `.env` file is already configured with your ClickSend credentials:
-- API Key: `BA405B6A-4D4C-DF61-BE11-FF310F62C258`
-- Email: `engramar@code.sydney`
-- Phone: `+61430410829`
+Create a `.env` file in the root directory with your ClickSend credentials:
+```
+CLICKSEND_API_KEY=your_api_key_here
+CLICKSEND_API_USERNAME=your_username_here
+CLICKSEND_EMAIL=your_email@example.com
+CLICKSEND_PHONE=+1234567890
+CLICKSEND_API_URL=https://rest.clicksend.com/v3
+CLICKSEND_EMAIL_ADDRESS_ID=optional_email_address_id
+```
 
 3. **Run the Application**
 ```bash
@@ -36,13 +41,13 @@ http://localhost:8000
 ## Usage
 
 ### Send Email
-1. Fill in the recipient email (default: `engramar@code.sydney`)
+1. Fill in the recipient email address
 2. Enter email subject
 3. Enter email body/message
 4. Click "Send Email"
 
 ### Send SMS
-1. Fill in the recipient phone number (default: `+61430410829`)
+1. Fill in the recipient phone number
    - Must be in E.164 format: `+[country code][number]`
 2. Enter SMS message (max 160 characters)
 3. Click "Send SMS"
@@ -89,7 +94,7 @@ clicksendtest/
 ## Notes
 
 - Make sure your ClickSend account has sufficient credits
-- The sender email (`engramar@code.sydney`) must be verified in your ClickSend account
+- The sender email must be verified in your ClickSend account
 - Phone numbers must be in international E.164 format (e.g., `+61430410829`)
 - SMS messages are limited to 160 characters
 
