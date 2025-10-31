@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8">
+    <div class="text-center mb-8">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-hand font-bold text-black mb-4">
+            ClickSend Notification Tester
+        </h1>
+        <p class="text-base sm:text-lg md:text-xl text-gray-600 font-sans">
+            Test email and SMS notifications via ClickSend API
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Email Tester Form -->
+        <div class="bg-white border-2 border-black rounded-lg shadow-lg p-4 sm:p-6">
+            <h2 class="text-xl sm:text-2xl font-hand font-bold text-black mb-4 sm:mb-6">
+                <i class="fas fa-envelope mr-2 text-black"></i>
+                Email Notification Tester
+            </h2>
+            
+            <form id="emailForm" class="space-y-4">
+                <div>
+                    <label for="emailTo" class="block text-sm font-medium text-black mb-2 font-hand">
+                        To Email
+                    </label>
+                    <input 
+                        type="email" 
+                        id="emailTo" 
+                        name="to"
+                        value="engramar@code.sydney"
+                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-base sm:text-lg font-sans"
+                        placeholder="recipient@example.com"
+                        required
+                    >
+                </div>
+                
+                <div>
+                    <label for="emailSubject" class="block text-sm font-medium text-black mb-2 font-hand">
+                        Subject
+                    </label>
+                    <input 
+                        type="text" 
+                        id="emailSubject" 
+                        name="subject"
+                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-base sm:text-lg font-sans"
+                        placeholder="Email subject"
+                        required
+                    >
+                </div>
+                
+                <div>
+                    <label for="emailBody" class="block text-sm font-medium text-black mb-2 font-hand">
+                        Message Body
+                    </label>
+                    <textarea 
+                        id="emailBody" 
+                        name="body"
+                        rows="4"
+                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-base sm:text-lg font-sans"
+                        placeholder="Email message content"
+                        required
+                    ></textarea>
+                </div>
+                
+                <button 
+                    type="submit"
+                    id="emailSubmitBtn"
+                    class="w-full bg-black text-white px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-800 focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors duration-200 font-hand font-bold text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Send Email
+                </button>
+                
+                <div id="emailResult" class="hidden mt-4 p-4 rounded-lg"></div>
+            </form>
+        </div>
+
+        <!-- SMS Tester Form -->
+        <div class="bg-white border-2 border-black rounded-lg shadow-lg p-4 sm:p-6">
+            <h2 class="text-xl sm:text-2xl font-hand font-bold text-black mb-4 sm:mb-6">
+                <i class="fas fa-sms mr-2 text-black"></i>
+                SMS Notification Tester
+            </h2>
+            
+            <form id="smsForm" class="space-y-4">
+                <div>
+                    <label for="smsTo" class="block text-sm font-medium text-black mb-2 font-hand">
+                        To Phone Number
+                    </label>
+                    <input 
+                        type="tel" 
+                        id="smsTo" 
+                        name="to"
+                        value="+61430410829"
+                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-base sm:text-lg font-sans"
+                        placeholder="+1234567890"
+                        pattern="^\+\d{10,15}$"
+                        required
+                    >
+                    <p class="mt-1 text-xs text-gray-600 font-sans">Format: +[country code][number] (e.g., +61430410829)</p>
+                </div>
+                
+                <div>
+                    <label for="smsMessage" class="block text-sm font-medium text-black mb-2 font-hand">
+                        Message
+                    </label>
+                    <textarea 
+                        id="smsMessage" 
+                        name="message"
+                        rows="4"
+                        maxlength="160"
+                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-base sm:text-lg font-sans"
+                        placeholder="SMS message (max 160 characters)"
+                        required
+                    ></textarea>
+                    <p class="mt-1 text-xs text-gray-600 font-sans">
+                        <span id="smsCharCount">0</span>/160 characters
+                    </p>
+                </div>
+                
+                <button 
+                    type="submit"
+                    id="smsSubmitBtn"
+                    class="w-full bg-black text-white px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-800 focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors duration-200 font-hand font-bold text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    <i class="fas fa-sms mr-2"></i>
+                    Send SMS
+                </button>
+                
+                <div id="smsResult" class="hidden mt-4 p-4 rounded-lg"></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // API Client
+    class ApiClient {
+        constructor(baseURL) {
+            this.baseURL = baseURL || '';
+        }
+
+        async request(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${this.baseURL}${endpoint}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.detail || `HTTP error! status: ${response.status}`);
+                }
+
+                return data;
+            } catch (error) {
+                console.error('API request failed:', error);
+                throw error;
+            }
+        }
+
+        async sendEmail(emailData) {
+            return this.request('/api/email/send', {
+                method: 'POST',
+                body: JSON.stringify(emailData)
+            });
+        }
+
+        async sendSMS(smsData) {
+            return this.request('/api/sms/send', {
+                method: 'POST',
+                body: JSON.stringify(smsData)
+            });
+        }
+    }
+
+    const apiClient = new ApiClient();
+
+    // Show notification
+    function showNotification(elementId, message, isSuccess) {
+        const element = document.getElementById(elementId);
+        element.className = `mt-4 p-4 rounded-lg ${
+            isSuccess 
+                ? 'bg-green-100 text-green-800 border-2 border-green-500' 
+                : 'bg-red-100 text-red-800 border-2 border-red-500'
+        }`;
+        element.textContent = message;
+        element.classList.remove('hidden');
+        
+        // Scroll to result
+        element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Hide after 5 seconds if success
+        if (isSuccess) {
+            setTimeout(() => {
+                element.classList.add('hidden');
+            }, 5000);
+        }
+    }
+
+    // Email form handler
+    const emailForm = document.getElementById('emailForm');
+    const emailSubmitBtn = document.getElementById('emailSubmitBtn');
+    
+    emailForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(emailForm);
+        const emailData = {
+            to: formData.get('to'),
+            subject: formData.get('subject'),
+            body: formData.get('body')
+        };
+        
+        emailSubmitBtn.disabled = true;
+        emailSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+        
+        try {
+            const result = await apiClient.sendEmail(emailData);
+            showNotification('emailResult', result.message || 'Email sent successfully!', true);
+            emailForm.reset();
+            emailForm.querySelector('input[name="to"]').value = 'engramar@code.sydney';
+        } catch (error) {
+            showNotification('emailResult', `Error: ${error.message}`, false);
+        } finally {
+            emailSubmitBtn.disabled = false;
+            emailSubmitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Send Email';
+        }
+    });
+
+    // SMS form handler
+    const smsForm = document.getElementById('smsForm');
+    const smsSubmitBtn = document.getElementById('smsSubmitBtn');
+    const smsMessage = document.getElementById('smsMessage');
+    const smsCharCount = document.getElementById('smsCharCount');
+    
+    // Character counter
+    smsMessage.addEventListener('input', () => {
+        smsCharCount.textContent = smsMessage.value.length;
+        if (smsMessage.value.length > 160) {
+            smsCharCount.classList.add('text-red-600');
+        } else {
+            smsCharCount.classList.remove('text-red-600');
+        }
+    });
+    
+    smsForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(smsForm);
+        const smsData = {
+            to: formData.get('to'),
+            message: formData.get('message')
+        };
+        
+        smsSubmitBtn.disabled = true;
+        smsSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+        
+        try {
+            const result = await apiClient.sendSMS(smsData);
+            showNotification('smsResult', result.message || 'SMS sent successfully!', true);
+            smsForm.reset();
+            smsForm.querySelector('input[name="to"]').value = '+61430410829';
+            smsCharCount.textContent = '0';
+        } catch (error) {
+            showNotification('smsResult', `Error: ${error.message}`, false);
+        } finally {
+            smsSubmitBtn.disabled = false;
+            smsSubmitBtn.innerHTML = '<i class="fas fa-sms mr-2"></i>Send SMS';
+        }
+    });
+</script>
+{% endblock %}
+
