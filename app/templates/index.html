@@ -28,7 +28,6 @@
                         type="email" 
                         id="emailTo" 
                         name="to"
-                        value="engramar@code.sydney"
                         class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-base sm:text-lg font-sans"
                         placeholder="recipient@example.com"
                         required
@@ -92,7 +91,6 @@
                         type="tel" 
                         id="smsTo" 
                         name="to"
-                        value="+61430410829"
                         class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-base sm:text-lg font-sans"
                         placeholder="+1234567890"
                         pattern="^\+\d{10,15}$"
@@ -226,7 +224,6 @@
             const result = await apiClient.sendEmail(emailData);
             showNotification('emailResult', result.message || 'Email sent successfully!', true);
             emailForm.reset();
-            emailForm.querySelector('input[name="to"]').value = 'engramar@code.sydney';
         } catch (error) {
             showNotification('emailResult', `Error: ${error.message}`, false);
         } finally {
@@ -267,7 +264,6 @@
             const result = await apiClient.sendSMS(smsData);
             showNotification('smsResult', result.message || 'SMS sent successfully!', true);
             smsForm.reset();
-            smsForm.querySelector('input[name="to"]').value = '+61430410829';
             smsCharCount.textContent = '0';
         } catch (error) {
             showNotification('smsResult', `Error: ${error.message}`, false);
